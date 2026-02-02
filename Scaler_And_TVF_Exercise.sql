@@ -1,20 +1,39 @@
 /*
 ========================================================
  File Name : Scaler_And_TVF_Exercise.sql
- Purpose   : 
+ Purpose   : Practice Scalar and Table-Valued Functions in SQL Server
  Database  : Northwind
  Author    : Mahdi Davoudi
  Date      : 2026/01/23
 ========================================================
 
  Notes:
+ - Demonstrates how to create a Scalar Function to calculate 
+   product profit for a given order and product.
+ - Demonstrates how to create a Table-Valued Function (TVF) 
+   to list all orders of a customer with profit per product
 
 */
 
 
+-- Set the database context to Northwind
 
 USE Northwind;
 GO
+
+/*
+========================================================
+ 1️⃣ Scalar Function: dbo.fn_ProductProfit
+========================================================
+ Purpose: Calculate the profit of a specific product in a specific order.
+ Parameters:
+   @OrderID   -> ID of the order
+   @ProductID -> ID of the product
+ Returns:
+   Profit as MONEY
+ Notes:
+   Profit = Quantity * UnitPrice * (1 - Discount)
+*/
  
 CREATE OR ALTER  FUNCTION dbo.fn_ProductProfit (@OrderID int , @ProductID int)
 RETURNS  money
@@ -35,7 +54,19 @@ SELECT dbo.fn_ProductProfit(10248,11) AS Profit
 GO 
 
 
---- TVF 
+/*
+========================================================
+ 2️⃣ Table-Valued Function: dbo.fn_CustomerOrdersProfit
+========================================================
+ Purpose: Return all orders of a customer with profit per product.
+ Parameters:
+   @CustomerID -> ID of the customer (char(5))
+ Returns:
+   Table containing:
+     OrderID, OrderDate, ProductID, Quantity, UnitPrice, Discount, Profit
+ Notes:
+   Calls dbo.fn_ProductProfit for each product in customer's orders.
+*/
 
 CREATE OR ALTER FUNCTION dbo.fn_CutomerOrdersProfit (@CutomerID char(5) )
 RETURNS TABLE 
